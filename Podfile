@@ -5,8 +5,8 @@ inhibit_all_warnings!
 abstract_target 'TweetieAbstract' do
     pod 'Alamofire'
 
-    pod 'RxSwift', '4.4.1'
-    pod 'RxCocoa', '4.4.1'
+#    pod 'RxSwift', '4.4.1'
+#    pod 'RxCocoa', '4.4.1'
     pod 'RealmSwift', '3.12.0'
     pod 'RxRealm', '0.7.6'
     pod 'Unbox', '3.0.0'

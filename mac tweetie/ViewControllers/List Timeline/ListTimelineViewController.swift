@@ -33,27 +33,43 @@ import RxCocoa
 import RealmSwift
 import RxRealm
 import Then
+import RxRealmDataSources
+
 
 class ListTimelineViewController: NSViewController {
   private let bag = DisposeBag()
   fileprivate var viewModel: ListTimelineViewModel!
   fileprivate var navigator: Navigator!
-
+  
   @IBOutlet var tableView: NSTableView!
-
+  
   static func createWith(navigator: Navigator, storyboard: NSStoryboard, viewModel: ListTimelineViewModel) -> ListTimelineViewController {
     return storyboard.instantiateViewController(ofType: ListTimelineViewController.self).then { vc in
       vc.navigator = navigator
       vc.viewModel = viewModel
     }
   }
-
+  
   override func viewDidLoad() {
     super.viewDidLoad()
+    title = "@\(viewModel.list.username)/\(viewModel.list.slug)"
+    navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .bookmarks, target: nil, action: nil)
     bindUI()
   }
-
+  
   func bindUI() {
     // Show tweets in table view
+    navigationItem.rightBarButtonItem!.rx.tap
+      .throttle(0.5, scheduler: MainScheduler.instance)
+      .subscribe(onNext: { [weak self] _ in
+        guard let self = self else { return }
+        self.navigator.show(segue: .listPeople(self.viewModel.account, self.viewModel.list), sender: self)
+    })
+      .disposed(by: bag)
+    
+    let dataSource = RxTableViewRealmDataSource<Tweet>(cellIndentifier: "TweetCellView", cellType: TweetCellView.self) { cell, _, tweet in
+      cell.update(with: tweet)
+    }
+    
   }
 }
